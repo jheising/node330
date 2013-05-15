@@ -1,0 +1,22 @@
+{
+	"name" : "node330",
+	"version" : "0.0.0",
+	"description" : "ERROR: No README.md file found!",
+	"main" : "./lib/node330.js",
+	"scripts" : {
+		"start" : "node server.js"
+	},
+	"repository" : "",
+	"author" : "",
+	"license" : "MIT",
+	"directories" : {
+		"lib" : "lib"
+	},
+	"dependencies" : {
+		"underscore" : "*",
+		"underscore.string" : "*",
+		"optimist" : "*",
+		"async" : "*",
+		"express" : "*"
+	}
+}
