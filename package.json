@@ -1,7 +1,7 @@
 {
 	"name" : "node330",
-	"version" : "0.0.0",
-	"description" : "ERROR: No README.md file found!",
+	"version" : "0.0.1",
+	"description" : "An implementation of a type of Programmable Logic Controller (PLC) using Node.js as a runtime.",
 	"main" : "./lib/node330.js",
 	"scripts" : {
 		"start" : "node server.js"
