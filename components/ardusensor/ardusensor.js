@@ -52,6 +52,11 @@ function ardusensor(config)
 	});
 }
 
+ardusensor.prototype.loadFromConfig = function(node330Engine, node330Config)
+{
+
+}
+
 ardusensor.prototype.createPhysicalComponentForSubsensor = function(subsensorID, valueType)
 {
 	var self = this;

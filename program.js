@@ -1,7 +1,7 @@
 var _ = require("underscore");
 _.str = require("underscore.string");
 
-module.exports.setup = function(node330, config, inputTemp, drawTemp, sumpTemp)
+module.exports.setup = function(node330, config, inputTemp, drawTemp, sumpTemp, startSwitch)
 {
 	// Create some default settings, if they don't already exist in a settings file somewhere.
 	config.initWithDefaults({
@@ -14,6 +14,8 @@ module.exports.setup = function(node330, config, inputTemp, drawTemp, sumpTemp)
 	inputTemp.setValueType(node330.valueTypes.TEMP_IN_F);
 	drawTemp.setValueType(node330.valueTypes.TEMP_IN_F);
 	sumpTemp.setValueType(node330.valueTypes.TEMP_IN_F);
+
+	startSwitch.setReadOnly(false);
 
 	// Create an ardusensor physical component
 	var ardusensor = node330.createPhysicalComponent("ardusensor", config.getSetting("ardusensor"));
@@ -57,9 +59,14 @@ module.exports.setup = function(node330, config, inputTemp, drawTemp, sumpTemp)
 
 		config.setSetting("ardusensor_mappings", sensorMappings);
 
-		node330.exposeValue("input_temp", "Input Temp", node330.valueTypes.TEMP_IN_F, "The temp of the input wash.", function(){ return inputTemp.tempInF();});
-		node330.exposeTo(node330.console());
+
 	});
+
+	node330.exposeVirtualComponentToViewers(inputTemp);
+	node330.exposeVirtualComponentToViewers(drawTemp);
+	node330.exposeVirtualComponentToViewers(startSwitch);
+	//node330.addViewer(node330.createConsoleViewer());
+	node330.addViewer(node330.createWebViewer());
 
 	/*timers.setInterval(function()
 	                   {
