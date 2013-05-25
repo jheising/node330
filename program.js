@@ -1,107 +1,104 @@
 var _ = require("underscore");
 _.str = require("underscore.string");
+//var pcduino = require("pcduino");
 
-module.exports.setup = function(node330, config, inputTemp, drawTemp, sumpTemp, startSwitch)
+var arduSensor;
+
+module.exports.setup = function(node330, config, inputTemp, preheaterPID, cvValue, setPoint, pGain, iGain, dGain, cvMin, cvMax)
 {
-	// Create some default settings, if they don't already exist in a settings file somewhere.
-	config.initWithDefaults({
-		ardusensor: {
-			port: "/dev/ttyS1",
-			baudrate: 9600
-		}});
+    //pcduino.digital.pinMode(0, 3);
+    //pcduino.digital.pinMode(1, 3);
 
-	// Set our temperature components to display things in degrees F
-	inputTemp.setValueType(node330.valueTypes.TEMP_IN_F);
-	drawTemp.setValueType(node330.valueTypes.TEMP_IN_F);
-	sumpTemp.setValueType(node330.valueTypes.TEMP_IN_F);
+    // Create some default settings, if they don't already exist in a settings file somewhere.
+    config.initWithDefaults({
+        ardusensor: {
+            port: "/dev/ttyS1",
+            baudrate: 9600
+        }});
 
-	startSwitch.setReadOnly(false);
+    // Set our temperature components to display things in degrees F
+    inputTemp.setValueType(node330.valueTypes.TEMP_IN_F);
+    setPoint.setValueType(node330.valueTypes.TEMP_IN_F);
 
-	// Create an ardusensor physical component
-	var ardusensor = node330.createPhysicalComponent("ardusensor", config.getSetting("ardusensor"));
+    setPoint.setReadOnly(false);
+    pGain.setReadOnly(false);
+    iGain.setReadOnly(false);
+    dGain.setReadOnly(false);
+    cvMin.setReadOnly(false);
+    cvMax.setReadOnly(false);
+    cvValue.setReadOnly(false);
 
-	// When the ardusensor device says it's sensors are ready, go ahead an map to them to components in our node330 program
-	ardusensor.onSensorsReady(function()
-	{
-		// Load our sensor mappings from our config file
-		var sensorMappings = config.getSetting("ardusensor_mappings", {});
+    // Create an ardusensor physical component
+    ardusensor = node330.createPhysicalComponent("ardusensor", config.getSetting("ardusensor"));
 
-		// Get a list of physical sensor IDs reported by the ardusensor
-		var sensorIDs = ardusensor.getSubsensorIDs();
+    // When the ardusensor device says it's sensors are ready, go ahead an map to them to components in our node330 program
+    ardusensor.onSensorsReady(function()
+    {
+        // Load our sensor mappings from our config file
+        var sensorMappings = config.getSetting("ardusensor_mappings", {});
 
-		// Loop through each physical sensor and map it to a component as specified in our config file
-		for(var index = 0; index < sensorIDs.length; index++)
-		{
-			var sensorID = sensorIDs[index];
-			var sensorMapping = sensorMappings[sensorID];
+        // Get a list of physical sensor IDs reported by the ardusensor
+        var sensorIDs = ardusensor.getSubsensorIDs();
 
-			// If the sensor mapping doesn't exist in our config file, go ahead and add a default one.
-			if(_.isUndefined(sensorMapping))
-			{
-				sensorMapping = {
-					map_to : "",
-					value_type : node330.valueTypes.valueTypeToString(node330.valueTypes.NUMERIC) // We'll default to a generic NUMERIC value
-				};
+        // Loop through each physical sensor and map it to a component as specified in our config file
+        for(var index = 0; index < sensorIDs.length; index++)
+        {
+            var sensorID = sensorIDs[index];
+            var sensorMapping = sensorMappings[sensorID];
 
-				sensorMappings[sensorID] = sensorMapping;
-			}
+            // If the sensor mapping doesn't exist in our config file, go ahead and add a default one.
+            if(_.isUndefined(sensorMapping))
+            {
+                sensorMapping = {
+                    map_to : "",
+                    value_type : node330.valueTypes.valueTypeToString(node330.valueTypes.NUMERIC) // We'll default to a generic NUMERIC value
+                };
 
-			// Ask node330 for the component named in the config file. This will basically equal the name of one of the components that we've passed into the main setup function.
-			var virtualComponent = node330.getVirtualComponentNamed(sensorMapping.map_to);
+                sensorMappings[sensorID] = sensorMapping;
+            }
 
-			if(!_.isUndefined(virtualComponent))
-			{
-				// If the virtual component exists, go ahead and map our physical component to it.
-				var subsensorComponent = ardusensor.createPhysicalComponentForSubsensor(sensorID, node330.valueTypes.stringToValueType(sensorMapping.value_type));
-				node330.mapPhysicalComponentToVirtualComponent(subsensorComponent, virtualComponent);
-			}
-		}
+            // Ask node330 for the component named in the config file. This will basically equal the name of one of the components that we've passed into the main setup function.
+            var virtualComponent = node330.getVirtualComponentNamed(sensorMapping.map_to);
 
-		config.setSetting("ardusensor_mappings", sensorMappings);
+            if(!_.isUndefined(virtualComponent))
+            {
+                // If the virtual component exists, go ahead and map our physical component to it.
+                var subsensorComponent = ardusensor.createPhysicalComponentForSubsensor(sensorID, node330.valueTypes.stringToValueType(sensorMapping.value_type));
+                node330.mapPhysicalComponentToVirtualComponent(subsensorComponent, virtualComponent);
+            }
+        }
 
+        config.setSetting("ardusensor_mappings", sensorMappings);
+    });
 
-	});
+    node330.exposeVirtualComponentToViewers(inputTemp);
+    node330.exposeVirtualComponentToViewers(cvValue);
+    node330.exposeVirtualComponentToViewers(setPoint);
+    node330.exposeVirtualComponentToViewers(pGain);
+    node330.exposeVirtualComponentToViewers(iGain);
+    node330.exposeVirtualComponentToViewers(dGain);
+    node330.exposeVirtualComponentToViewers(cvMin);
+    node330.exposeVirtualComponentToViewers(cvMax);
 
-	node330.exposeVirtualComponentToViewers(inputTemp);
-	node330.exposeVirtualComponentToViewers(drawTemp);
-	node330.exposeVirtualComponentToViewers(startSwitch);
-	//node330.addViewer(node330.createConsoleViewer());
-	node330.addViewer(node330.createWebViewer());
+    //node330.addViewer(node330.createConsoleViewer());
+    node330.addViewer(node330.createWebViewer());
 
-	/*timers.setInterval(function()
-	                   {
-							inputTempValue = inputTempValue + (inputTempPID.getControlValue() * 0.20) - (inputTempValue * 0.10);
-	                   }, 1000);
-
-
-	// TODO Remove. This is a function to push in values to our temp
-	inputTemp.setSensorInterface(new node330.sensorTypes.functionSensorInterface330(node330.valueTypes.TEMP_IN_F, function()
-	{
-		return inputTempValue;
-	}));
-
-	inputTempPID.setMeasurementSensor(inputTemp);
-	inputTempPID.setSampleInterval(2000);
-	inputTempPID.setProportionalGain(1);
-	inputTempPID.setIntegralGain(0.5);
-	inputTempPID.setDerivativeGain(0);
-
-	inputTempPID.setDesiredValue(140.0);*/
-
-	//node330.exposeValue("input_temp", "Input Temp", node330.valueTypes.TEMP_IN_F, "The temp of the input wash.", function(){ return inputTemp.tempInF();});
-	//node330.exposeValue("control_value", "Control value", node330.valueTypes.TEMP_IN_F, "", function(){ return inputTempPID.getControlValue();});
-	//node330.exposeTo(node330.web());
-	//node330.exposeTo(node330.console());
-	//node330.exposeTo(node330.csvFile());*/
+    preheaterPID.setSampleInterval(1000);
 };
 
-/*module.exports.update = function()
+module.exports.loop = function(node330, inputTemp, preheaterPID, cvValue, setPoint, pGain, iGain, dGain, cvMin, cvMax)
 {
-	node330.do(checkTemp);
-}
+    preheaterPID.setProportionalGain(pGain.getValue());
+    preheaterPID.setIntegralGain(iGain.getValue());
+    preheaterPID.setDerivativeGain(dGain.getValue());
+    preheaterPID.setControlValueLimits(cvMin.getValue(), cvMax.getValue(), 0);
+    preheaterPID.setDesiredValue(setPoint.getValue());
 
-function checkTemp(switch1)
-{
-	var x = switch1.isOn();
-	var y = 1;
-}*/
+    preheaterPID.setMeasuredValue(80.0);//inputTemp.tempInF());
+
+    var cv = Math.floor(preheaterPID.getControlValue());
+    //console.log("CV: " + cv);
+    //ardusensor.sendCommand("5:" + cv);
+
+    cvValue.setValue(cv);
+}

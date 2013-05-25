@@ -1,5 +1,5 @@
 var node330 = require("../../lib/node330.js");
-var serialport = require("serialport");
+var serial = require("serialport");
 var _ = require("underscore");
 _.str = require("underscore.string");
 
@@ -12,15 +12,17 @@ function ardusensor(config)
 {
 	var self = this;
 
-	this.serialport = new serialport.SerialPort(config.port, {
+	this.serialport = new serial.SerialPort(config.port, {
 		baudrate : config.baudrate,
-		parser : serialport.parsers.readline("\r\n")
+		parser : serial.parsers.readline("\r\n")
 	});
 
 	this.values = {};
+    this.allowWrite = false;
 
 	this.serialport.on('data', function(data)
 	{
+        self.allowWrite = true;
 		var sensorCount = _.keys(self.values).length;
 
 		data = _.str.trim(data);
@@ -55,6 +57,15 @@ function ardusensor(config)
 ardusensor.prototype.loadFromConfig = function(node330Engine, node330Config)
 {
 
+}
+
+ardusensor.prototype.sendCommand = function(command)
+{
+    //if(this.allowWrite)
+    //{
+        this.serialport.write(command + "\r");
+   // console.log(command + "\r");
+    //}
 }
 
 ardusensor.prototype.createPhysicalComponentForSubsensor = function(subsensorID, valueType)

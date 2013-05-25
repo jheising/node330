@@ -1,4 +1,5 @@
 config
 logs
 node_modules
+data
 .idea

@@ -1,1 +1,54 @@
-Hello world!
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="js/rickshaw/rickshaw.min.css">
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+    <title>node330</title>
+    <script type="text/javascript" src="js/head.js"></script>
+    <script type="text/javascript">
+        // Load our scripts
+        head.js("js/underscore-min.js",
+                "js/jquery-1.9.1.js",
+                "js/jquery-ui-1.10.3.custom.min.js",
+                "js/rickshaw/vendor/d3.min.js",
+                "js/rickshaw/vendor/d3.layout.min.js",
+                "js/rickshaw/rickshaw.min.js",
+                "js/knockout.js",
+                "js/node330.client.js",
+                function()
+        {
+        });
+    </script>
+    <style>
+        #chart_container {
+            position: relative;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .rickshaw_graph .y_ticks {
+            left: 0;
+        }
+        #y_axis {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+<div data-bind="foreach: components">
+    <div><span data-bind="text: name"></span> :
+        <!-- ko if:read_only() --> <input type="text" data-bind="value:value" disabled="disabled"><!-- /ko -->
+        <!-- ko if:!read_only() --><input type="text" data-bind="value:value"><!-- /ko -->
+    </div>
+</div>
+<div id="chart_container">
+    <div id="chart"></div>
+    <div id="timeline"></div>
+    <div id="slider"></div>
+    <div id="legend"></div>
+</div>
+</body>
+</html>

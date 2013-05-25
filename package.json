@@ -2,9 +2,9 @@
 	"name" : "node330",
 	"version" : "0.0.1",
 	"description" : "An implementation of a type of Programmable Logic Controller (PLC) using Node.js as a runtime.",
-	"main" : "./lib/node330.js",
+	"main" : "node330.js",
 	"scripts" : {
-		"start" : "node server.js"
+		"start" : "node node330.js"
 	},
 	"repository" : "",
 	"author" : "",
@@ -17,6 +17,8 @@
 		"underscore.string" : "*",
 		"optimist" : "*",
 		"async" : "*",
-		"express" : "*"
+		"express" : "*",
+        "winston" : "*",
+        "forever" : "*"
 	}
 }
