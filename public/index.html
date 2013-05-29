@@ -1,10 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <link rel="stylesheet" href="js/rickshaw/rickshaw.min.css">
     <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/style.css" rel="stylesheet">
     <title>node330</title>
     <script type="text/javascript" src="js/head.js"></script>
     <script type="text/javascript">
@@ -12,23 +14,33 @@
         head.js("js/underscore-min.js",
                 "js/jquery-1.9.1.js",
                 "js/jquery-ui-1.10.3.custom.min.js",
+                "js/bootstrap.min.js",
                 "js/rickshaw/vendor/d3.min.js",
                 "js/rickshaw/vendor/d3.layout.min.js",
                 "js/rickshaw/rickshaw.min.js",
                 "js/knockout.js",
+                "js/rgraph/RGraph.common.core.js",
+                "js/rgraph/RGraph.drawing.image.js",
+                "js/rgraph/RGraph.common.dynamic.js",
+                "js/rgraph/RGraph.common.effects.js",
+                "js/rgraph/RGraph.gauge.js",
+                "js/rgraph/RGraph.vprogress.js",
+                "js/rgraph/RGraph.hprogress.js",
+                "js/rgraph/RGraph.cornergauge.js",
                 "js/node330.client.js",
-                function()
-        {
-        });
+                function () {
+                });
     </script>
     <style>
         #chart_container {
             position: relative;
             font-family: Arial, Helvetica, sans-serif;
         }
+
         .rickshaw_graph .y_ticks {
             left: 0;
         }
+
         #y_axis {
             position: absolute;
             top: 0;
@@ -38,10 +50,69 @@
     </style>
 </head>
 <body>
-<div data-bind="foreach: components">
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#dashboard" data-toggle="tab">Dashboard</a></li>
+    <li><a href="#settings" data-toggle="tab">Settings</a></li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active container-fluid" id="dashboard">
+        <div class="row-fluid">
+            <div class="span4 text-center">
+                <img src="img/bunker-badge.png">
+            </div>
+            <div class="span4 text-center">
+                <div class="row-fluid">
+                    <div class="span12"><h3>Pre Heater</h3></div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <canvas class="gauge" id="preHeaterTemp" width="250" height="250">[No canvas support]</canvas>
+                        <br/>
+                        <canvas class="gauge" id="preHeaterPower" width="175" height="175">[No canvas support]</canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="span4 text-center">
+                <div class="row-fluid">
+                    <div class="span12"><h3></h3></div>
+                </div>
+                <div class="row-fluid">
+                    <canvas class="gauge" id="mainHeaterTemp" width="250" height="250">[No canvas support]</canvas>
+                    <br/>
+                    <canvas class="gauge" id="mainHeaterPower" width="175" height="175">[No canvas support]</canvas>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">Test</div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div id="combinedChart"></div>
+                <div id="combinedLegend"></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="settings">
+        <form class="form-horizontal" data-bind="foreach: components">
+            <div class="control-group">
+                <label class="control-label" data-bind="text: display_name, attr:{for:name}"></label>
+                <div class="controls">
+                    <div data-bind="css: (units() == '') ? '' : 'input-append'">
+                        <input class="input-small text-right" type="text" data-bind="event: {focus:startEditing, blur:endEditing}, value: value, attr:{id:name, disabled:read_only() ? 'true' : undefined}">
+                        <span class="add-on" data-bind="text: units"></span>
+                    </div>
+                    <label class="checkbox"><input type="checkbox" data-bind="checked:graph"> Graph me</label>
+                    <span class="help-block" data-bind="text: description"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--<div data-bind="foreach: components">
     <div><span data-bind="text: name"></span> :
-        <!-- ko if:read_only() --> <input type="text" data-bind="value:value" disabled="disabled"><!-- /ko -->
-        <!-- ko if:!read_only() --><input type="text" data-bind="value:value"><!-- /ko -->
+        <b data-bind="visible: !editing(), text: value, click: edit">&nbsp;</b>
+        <input data-bind="visible: editing, value: value, hasfocus: editing" />
     </div>
 </div>
 <div id="chart_container">
@@ -49,6 +120,6 @@
     <div id="timeline"></div>
     <div id="slider"></div>
     <div id="legend"></div>
-</div>
+</div>-->
 </body>
 </html>

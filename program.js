@@ -3,30 +3,49 @@ _.str = require("underscore.string");
 //var pcduino = require("pcduino");
 
 var arduSensor;
+var sump_temp_bp_offset;
 
-module.exports.setup = function(node330, config, inputTemp, preheaterPID, cvValue, setPoint, pGain, iGain, dGain, cvMin, cvMax)
+module.exports.setup = function(node330,
+                                config,
+                                barometer,
+                                drawTemp,
+                                preHeaterTemp,
+                                preHeaterPID,
+                                preHeaterCV,
+                                preHeaterSetPoint,
+                                preHeaterPGain,
+                                preHeaterIGain,
+                                preHeaterDGain,
+                                preHeaterCVMin,
+                                preHeaterCVMax,
+                                sumpHeaterTemp,
+                                sumpHeaterPID,
+                                sumpHeaterCV,
+                                sumpHeaterSetPoint,
+                                sumpHeaterPGain,
+                                sumpHeaterIGain,
+                                sumpHeaterDGain,
+                                sumpHeaterCVMin,
+                                sumpHeaterCVMax)
 {
-    //pcduino.digital.pinMode(0, 3);
-    //pcduino.digital.pinMode(1, 3);
 
     // Create some default settings, if they don't already exist in a settings file somewhere.
     config.initWithDefaults({
+        pre_heater_pin: 5,
+        sump_heater_pin: 6,
+        sump_temp_bp_offset: -1.5,
         ardusensor: {
             port: "/dev/ttyS1",
             baudrate: 9600
         }});
 
-    // Set our temperature components to display things in degrees F
-    inputTemp.setValueType(node330.valueTypes.TEMP_IN_F);
-    setPoint.setValueType(node330.valueTypes.TEMP_IN_F);
+    // Reset our heaters to zero
+    //pcduino.analog.analogWrite(config.getSetting("pre_heater_pin"), 0);
+    //pcduino.analog.analogWrite(config.getSetting("sump_heater_pin"), 0);
 
-    setPoint.setReadOnly(false);
-    pGain.setReadOnly(false);
-    iGain.setReadOnly(false);
-    dGain.setReadOnly(false);
-    cvMin.setReadOnly(false);
-    cvMax.setReadOnly(false);
-    cvValue.setReadOnly(false);
+    // Set our pcDuino serial pins to serial mode
+    //pcduino.digital.pinMode(0, 3);
+    //pcduino.digital.pinMode(1, 3);
 
     // Create an ardusensor physical component
     ardusensor = node330.createPhysicalComponent("ardusensor", config.getSetting("ardusensor"));
@@ -71,34 +90,117 @@ module.exports.setup = function(node330, config, inputTemp, preheaterPID, cvValu
         config.setSetting("ardusensor_mappings", sensorMappings);
     });
 
-    node330.exposeVirtualComponentToViewers(inputTemp);
-    node330.exposeVirtualComponentToViewers(cvValue);
-    node330.exposeVirtualComponentToViewers(setPoint);
-    node330.exposeVirtualComponentToViewers(pGain);
-    node330.exposeVirtualComponentToViewers(iGain);
-    node330.exposeVirtualComponentToViewers(dGain);
-    node330.exposeVirtualComponentToViewers(cvMin);
-    node330.exposeVirtualComponentToViewers(cvMax);
+    node330.exposeVirtualComponentToViewers(drawTemp);
+    //node330.exposeVirtualComponentToViewers(barometer);
+    drawTemp.setValueType(node330.valueTypes.TEMP_IN_F);
 
-    //node330.addViewer(node330.createConsoleViewer());
+    // Setup our pre heater PID
+    preHeaterPID.setSampleInterval(1000);
+    preHeaterTemp.setValueType(node330.valueTypes.TEMP_IN_F);
+    preHeaterSetPoint.setValueType(node330.valueTypes.TEMP_IN_F);
+    preHeaterSetPoint.setReadOnly(false);
+    preHeaterPGain.setReadOnly(false);
+    preHeaterIGain.setReadOnly(false);
+    preHeaterDGain.setReadOnly(false);
+    preHeaterCVMin.setReadOnly(false);
+    preHeaterCVMax.setReadOnly(false);
+    node330.exposeVirtualComponentToViewers(preHeaterTemp);
+    node330.exposeVirtualComponentToViewers(preHeaterCV);
+    node330.exposeVirtualComponentToViewers(preHeaterSetPoint);
+    node330.exposeVirtualComponentToViewers(preHeaterPGain);
+    node330.exposeVirtualComponentToViewers(preHeaterIGain);
+    node330.exposeVirtualComponentToViewers(preHeaterDGain);
+    node330.exposeVirtualComponentToViewers(preHeaterCVMin);
+    node330.exposeVirtualComponentToViewers(preHeaterCVMax);
+    preHeaterCV.mapToValueFunction(function(){
+        return Math.floor(preHeaterPID.getControlValue());
+    });
+
+    // Setup our sump heater PID
+    sumpHeaterPID.setSampleInterval(1000);
+    sumpHeaterTemp.setValueType(node330.valueTypes.TEMP_IN_F);
+    sumpHeaterSetPoint.setValueType(node330.valueTypes.TEMP_IN_F);
+    sumpHeaterSetPoint.setReadOnly(false);
+    sumpHeaterPGain.setReadOnly(false);
+    sumpHeaterIGain.setReadOnly(false);
+    sumpHeaterDGain.setReadOnly(false);
+    sumpHeaterCVMin.setReadOnly(false);
+    sumpHeaterCVMax.setReadOnly(false);
+    node330.exposeVirtualComponentToViewers(sumpHeaterTemp);
+    node330.exposeVirtualComponentToViewers(sumpHeaterCV);
+    node330.exposeVirtualComponentToViewers(sumpHeaterSetPoint);
+    node330.exposeVirtualComponentToViewers(sumpHeaterPGain);
+    node330.exposeVirtualComponentToViewers(sumpHeaterIGain);
+    node330.exposeVirtualComponentToViewers(sumpHeaterDGain);
+    node330.exposeVirtualComponentToViewers(sumpHeaterCVMin);
+    node330.exposeVirtualComponentToViewers(sumpHeaterCVMax);
+    sumpHeaterCV.mapToValueFunction(function(){
+        return Math.floor(sumpHeaterPID.getControlValue());
+    });
+
     node330.addViewer(node330.createWebViewer());
+    //node330.addViewer(node330.createConsoleViewer());
 
-    preheaterPID.setSampleInterval(1000);
 };
 
-module.exports.loop = function(node330, inputTemp, preheaterPID, cvValue, setPoint, pGain, iGain, dGain, cvMin, cvMax)
+module.exports.loop = function(node330,
+                               config,
+                               barometer,
+                               preHeaterTemp,
+                               preHeaterPID,
+                               preHeaterCV,
+                               preHeaterSetPoint,
+                               preHeaterPGain,
+                               preHeaterIGain,
+                               preHeaterDGain,
+                               preHeaterCVMin,
+                               preHeaterCVMax,
+                               sumpHeaterTemp,
+                               sumpHeaterPID,
+                               sumpHeaterCV,
+                               sumpHeaterSetPoint,
+                               sumpHeaterPGain,
+                               sumpHeaterIGain,
+                               sumpHeaterDGain,
+                               sumpHeaterCVMin,
+                               sumpHeaterCVMax)
 {
-    preheaterPID.setProportionalGain(pGain.getValue());
-    preheaterPID.setIntegralGain(iGain.getValue());
-    preheaterPID.setDerivativeGain(dGain.getValue());
-    preheaterPID.setControlValueLimits(cvMin.getValue(), cvMax.getValue(), 0);
-    preheaterPID.setDesiredValue(setPoint.getValue());
+    // Calculate our boiling point
+    var baroInHG = barometer.getValue() / 100 * 0.02953;
+    var boilingPoint = Math.log(baroInHG) * 49.160999 + 44.93;
 
-    preheaterPID.setMeasuredValue(80.0);//inputTemp.tempInF());
+    var sumpHeaterSP = Math.min(255, Math.max(0, boilingPoint + config.getSetting("sump_temp_bp_offset")));
 
-    var cv = Math.floor(preheaterPID.getControlValue());
-    //console.log("CV: " + cv);
-    //ardusensor.sendCommand("5:" + cv);
+    //console.log("Sump Heater Set Point: " + sumpHeaterSP);
 
-    cvValue.setValue(cv);
+    // Set our pre heater PID values
+    preHeaterPID.setProportionalGain(preHeaterPGain.getValue());
+    preHeaterPID.setIntegralGain(preHeaterIGain.getValue());
+    preHeaterPID.setDerivativeGain(preHeaterDGain.getValue());
+    preHeaterPID.setControlValueLimits(preHeaterCVMin.getValue(), preHeaterCVMax.getValue(), 0);
+    preHeaterPID.setDesiredValue(preHeaterSetPoint.getValue());
+    preHeaterPID.setMeasuredValue(preHeaterTemp.tempInF());
+
+    var cv = preHeaterCV.getValue();
+
+    ardusensor.sendCommand(config.getSetting("pre_heater_pin") + ":" + cv);
+
+    // Set our sump heater PID values
+    sumpHeaterPID.setProportionalGain(sumpHeaterPGain.getValue());
+    sumpHeaterPID.setIntegralGain(sumpHeaterIGain.getValue());
+    sumpHeaterPID.setDerivativeGain(sumpHeaterDGain.getValue());
+    sumpHeaterPID.setControlValueLimits(sumpHeaterCVMin.getValue(), sumpHeaterCVMax.getValue(), 0);
+    sumpHeaterPID.setDesiredValue(sumpHeaterSP);
+    sumpHeaterPID.setMeasuredValue(sumpHeaterTemp.tempInF());
+
+    cv = sumpHeaterCV.getValue();
+
+    ardusensor.sendCommand(config.getSetting("sump_heater_pin") + ":" + cv);
+}
+
+module.exports.shutdown = function(config)
+{
+    // Reset our heaters to zero
+    //pcduino.analog.analogWrite(config.getSetting("pre_heater_pin"), 0);
+    //pcduino.analog.analogWrite(config.getSetting("sump_heater_pin"), 0);
 }
