@@ -29,6 +29,8 @@ module.exports.setup = function(node330,
                                 sumpHeaterCVMax)
 {
 
+	drawTemp.setDisplayName("Draw Temp");
+
     // Create some default settings, if they don't already exist in a settings file somewhere.
     config.initWithDefaults({
         pre_heater_pin: 5,

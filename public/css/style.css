@@ -2,8 +2,22 @@ canvas.gauge
 {
 }
 
+html, body
+{
+	height : 100%;
+}
+
 body
 {
-	min-height : 100%;
-	background : url('../img/brushed-bg.jpg') repeat;
+
+}
+
+#combinedChart
+{
+	width: 100%;
+}
+
+.dijitTooltipContainer
+{
+	padding: 10px;
 }
