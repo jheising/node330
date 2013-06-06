@@ -27,13 +27,15 @@
                 "js/rgraph/RGraph.cornergauge.js",
                 "js/dojo/dojo/dojo.js",
                 "js/node330.client.js",
-                function () {
+                function ()
+                {
                 });
     </script>
 </head>
 <body>
 <ul class="nav nav-tabs">
     <li class="active"><a href="#dashboard" data-toggle="tab">Dashboard</a></li>
+    <li><a href="#data" data-toggle="tab">Data</a></li>
     <li><a href="#settings" data-toggle="tab">Settings</a></li>
 </ul>
 <div class="tab-content">
@@ -68,9 +70,22 @@
                 </div>
             </div>
         </div>-->
+    </div>
+    <div class="tab-pane container-fluid" id="data">
         <div class="row-fluid">
-            <div class="span12">
-                <div id="combinedChart" style="width:100%;height:400px;"></div>
+            <div class="span2 text-right">
+                <p>
+                    <button class="btn btn-small" type="button" data-bind="click: clearData">Clear Data</button>
+                </p>
+                <p>
+                    <button class="btn btn-small" type="button">Pause</button>
+                </p>
+                <p>
+                    <button class="btn btn-small" type="button">Download CSV</button>
+                </p>
+            </div>
+            <div class="span10 claro" id="combinedChartContainer">
+                <div id="combinedChart"></div>
                 <div id="combinedChartLegend" style="width:100%;height:200px;"></div>
             </div>
         </div>
@@ -80,12 +95,30 @@
             <div class="control-group">
                 <label class="control-label" data-bind="text: display_name, attr:{for:name}"></label>
                 <div class="controls">
+                    <!-- ko if: type() == "SWITCH" -->
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" data-bind="checked: value, event: {click:endEditing}, attr:{disabled:read_only() ? 'true' : undefined}">
+                        <label class="onoffswitch-label" for="myonoffswitch">
+                            <div class="onoffswitch-inner">
+                                <div class="onoffswitch-active">
+                                    <div class="onoffswitch-switch">ON</div>
+                                </div>
+                                <div class="onoffswitch-inactive">
+                                    <div class="onoffswitch-switch">OFF</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: type() != "SWITCH" -->
                     <div data-bind="css: (units() == '') ? '' : 'input-append'">
                         <input class="input-small text-right" type="text" data-bind="event: {focus:startEditing, blur:endEditing}, value: value, attr:{id:name, disabled:read_only() ? 'true' : undefined}">
                         <span class="add-on" data-bind="text: units"></span>
                     </div>
+                    <!-- /ko -->
                     <label class="checkbox"><input type="checkbox" data-bind="checked:graph"> Graph me</label>
                     <span class="help-block" data-bind="text: description"></span>
+
                 </div>
             </div>
         </form>

@@ -1,16 +1,17 @@
 head.ready(function()
 {
-	require(["dojox/charting/Chart", "dojox/charting/themes/Tom", "dojo/store/Observable", "dojo/store/Memory",
+	require(["dojox/charting/Chart", "dojox/charting/themes/Claro", "dojox/charting/themes/Tom", "dojo/store/Observable", "dojo/store/Memory",
 	         "dojox/charting/StoreSeries", "dojox/charting/plot2d/Lines", "dojox/charting/axis2d/Default",
-	         "dojox/charting/widget/SelectableLegend", "dojox/charting/action2d/Tooltip",
+	         "dojox/charting/widget/SelectableLegend", "dojox/charting/action2d/Tooltip","dojox/charting/action2d/MouseZoomAndPan",
 	         "dojo/domReady!"],
-	function(Chart, Tom, Observable, Memory, StoreSeries, Lines, Axis2D, SelectableLegend, Tooltip)
+	function(Chart, Claro, Tom, Observable, Memory, StoreSeries, Lines, Default, SelectableLegend, Tooltip, MouseZoomAndPan)
 	{
 		var combinedChart;
 		var combinedChartData;
 		var combinedChartComponents = {};
 		var combinedChartLegend;
 		var combinedChartTooltip;
+        var combinedChartZoomAndPan;
 
 		function formatTimestamp(time)
 		{
@@ -79,7 +80,7 @@ head.ready(function()
 			// Behaviors
 			this.startEditing = function()
 			{
-
+				return true;
 			}
 
 			this.endEditing = function()
@@ -95,6 +96,8 @@ head.ready(function()
 
 					$.get("components/" + this.name() + "?set_value=" + value)
 				}
+
+				return true;
 			}
 
 
@@ -133,6 +136,15 @@ head.ready(function()
 					component.description(jsonValue.description);
 				});
 			}
+
+            self.clearData = function()
+            {
+                if (confirm('Are you sure you want to clear the data from the graph?')) {
+                    // Save it!
+                } else {
+                    // Do nothing!
+                }
+            }
 		}
 
 		// Create the data store
@@ -149,23 +161,28 @@ head.ready(function()
 		// Set the theme
 		combinedChart.setTheme(Tom);
 
-		// Add the only/default plot
-		combinedChart.addPlot("default", {
-			type   : Lines,
-			markers: true
-		});
-
 		// Add axes
-		combinedChart.addAxis("x", { labelFunc: function(text, value, precision)
+		combinedChart.addAxis("x", { type: Default, labelFunc: function(text, value, precision)
 		{
 			return formatTimestamp(value);
 		}});
 
 		combinedChart.addAxis("y", { vertical: true});
 
-		combinedChartLegend = new SelectableLegend({chart: combinedChart, horizontal: true}, "combinedChartLegend");
+        // Add the only/default plot
+        combinedChart.addPlot("default", {
+            type   : Lines,
+            markers: true
+        });
 
-		combinedChartTooltip = new Tooltip(combinedChart, "default", {
+		combinedChartLegend = new SelectableLegend({
+            chart: combinedChart,
+            horizontal: true,
+            region : "bottom"
+        },
+            dojo.byId("combinedChartLegend"));
+
+		combinedChartTooltip = new Tooltip(combinedChart, Lines, {
 			text: function(o)
 			{
 				var seriesName = o.run.source.series.name;
@@ -173,8 +190,20 @@ head.ready(function()
 			}
 		});
 
+        combinedChartZoomAndPan = new MouseZoomAndPan(combinedChart, "default", { axis: "x" });
+
 		// Render the chart!
 		combinedChart.render();
+
+        function resizeChart()
+        {
+            var chartContainer = $("#combinedChartContainer");
+
+            combinedChart.resize(chartContainer.width(), 400);
+        }
+
+        $(window).resize(resizeChart);
+        $('a[data-toggle="tab"]').on('shown', resizeChart);
 
 		var uiModel = new node330UIModel();
 
