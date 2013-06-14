@@ -1,4 +1,5 @@
 var node330 = require("../../lib/node330.js");
+var crc32 = require("easy-crc32");
 var serial = require("serialport");
 var _ = require("underscore");
 _.str = require("underscore.string");
@@ -26,11 +27,23 @@ function ardusensor(config)
 		var sensorCount = _.keys(self.values).length;
 
 		data = _.str.trim(data);
-		var sensorName  = _.str.strLeft(data, ':');
-		var sensorValue = _.str.strRight(data, ':');
 
-		if(_.isNull(sensorName) || _.isNull(sensorValue))
+        var dataValues = data.split(":");
+
+        if(dataValues.length != 3)
+        {
+            return;
+        }
+
+		var sensorName  = dataValues[0];
+		var sensorValue = dataValues[1];
+        var sensorDataCRC = dataValues[2].toUpperCase();
+
+        var calculatedDataCRC = crc32.calculate(sensorName + ":" + sensorValue).toString(16).toUpperCase();
+
+		if(sensorDataCRC != calculatedDataCRC)
 		{
+            console.log("*** Got a bad crc ***");
 			return;
 		}
 
@@ -54,18 +67,10 @@ function ardusensor(config)
 	});
 }
 
-ardusensor.prototype.loadFromConfig = function(node330Engine, node330Config)
-{
-
-}
-
 ardusensor.prototype.sendCommand = function(command)
 {
-    //if(this.allowWrite)
-    //{
-        this.serialport.write(command + "\r");
-   // console.log(command + "\r");
-    //}
+    var crcValue = crc32.calculate(command).toString(16);
+    this.serialport.write(command + ":" + crcValue + "\r");
 }
 
 ardusensor.prototype.createPhysicalComponentForSubsensor = function(subsensorID, valueType)

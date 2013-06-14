@@ -1,5 +1,6 @@
 {
 	"dependencies" : {
-		"serialport" : "*"
+		"serialport" : "*",
+        "easy-crc32" : "0.0.2"
 	}
 }
