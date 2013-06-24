@@ -173,3 +173,17 @@ input.onoffswitch-checkbox
 {
 	margin-left : 0;
 }
+
+.toggle-switch
+{
+    display: inline-block;
+    width: 102px;
+    height: 186px;
+    background-image : url('../img/toggle-switch.png');
+    background-position: center bottom;
+}
+
+.toggle-switch-on
+{
+    background-position: center top;
+}

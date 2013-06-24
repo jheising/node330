@@ -2,7 +2,8 @@
 	"name" : "node330",
 	"version" : "0.0.1",
 	"description" : "An implementation of a type of Programmable Logic Controller (PLC) using Node.js as a runtime.",
-	"main" : "node330.js",
+	"main" : "./node330.js",
+    "bin": "./node330.js",
 	"scripts" : {
 		"start" : "node node330.js"
 	},
@@ -20,6 +21,7 @@
 		"express" : "*",
         "winston" : "*",
         "forever" : "*",
-		"js2xmlparser" : "0.1.0"
+		"js2xmlparser" : "0.1.0",
+		"CBuffer" : "0.1.4"
 	}
 }

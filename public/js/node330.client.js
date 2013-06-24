@@ -1,4 +1,22 @@
 head.ready(function () {
+
+    function writeSetting(settingName, value)
+    {
+        if(_.isBoolean(value))
+        {
+            if(value === false)
+            {
+                value = 0;
+            }
+            else if(value === true)
+            {
+                value = 1;
+            }
+        }
+
+        $.get("components/" + settingName + "?set_value=" + value);
+    }
+
     function formatTimestamp(time) {
         var dt = new Date();
         dt.setTime(time);
@@ -30,7 +48,7 @@ head.ready(function () {
                     value = Number(value);
                 }
 
-                $.get("components/" + this.name() + "?set_value=" + value)
+                writeSetting(this.name(), value);
             }
 
             return true;
@@ -43,6 +61,36 @@ head.ready(function () {
         var self = this;
 
         self.components = ko.observableArray();
+
+        self.getComponentNamed = function(name)
+        {
+            return _.find(self.components(), function(component){
+
+                return (component.name() === name);
+
+            });
+        }
+
+        self.updateStartStopSwitch = function(state)
+        {
+            if(state)
+            {
+                $("#onOffSwitch").addClass("toggle-switch-on");
+            }
+            else
+            {
+                $("#onOffSwitch").removeClass("toggle-switch-on");
+            }
+        }
+
+        self.startStop = function()
+        {
+            var startStopComponent = self.getComponentNamed("startStopSwitch");
+            var state = !startStopComponent.value();
+
+            writeSetting("startStopSwitch", state);
+            self.updateStartStopSwitch(state);
+        }
 
         self.loadJSONData = function (data) {
 
@@ -70,6 +118,12 @@ head.ready(function () {
 
 	            componentValues[jsonValue.name] = jsonValue.value;
             });
+
+            // Update our on/off switch
+            if("startStopSwitch" in componentValues)
+            {
+                self.updateStartStopSwitch(componentValues["startStopSwitch"]);
+            }
 
 	        // Update our gauges
 	        if("preHeaterTemp" in componentValues)
@@ -122,7 +176,7 @@ head.ready(function () {
 
     }, 1000);
 
-    function createTempGauge(id, min, max, ticks)
+    function createTempGauge(id, min, max, ticks, highlightValues)
     {
 
     var gauge = new Gauge({
@@ -146,15 +200,7 @@ head.ready(function () {
 		    numbers   : '#73c5e2',
 		    needle    : { start: '#a3a3a2', end: '#a3a3a2' }
 	    },
-        highlights : [{
-            from  : 145,
-            to    : 150,
-            color : 'PaleGreen'
-        }, {
-            from  : 150,
-            to    : 155,
-            color : 'LightSalmon'
-        }],
+        highlights : highlightValues,
         animation : {
             delay : 10,
             duration: 300,
@@ -200,9 +246,25 @@ head.ready(function () {
         return gauge;
     }
 
-    preHeaterTempGauge = createTempGauge("preHeaterTempGauge", 0, 160, ['0', '20','40','60','80','100', '120', '140', '160']);
+    preHeaterTempGauge = createTempGauge("preHeaterTempGauge", 0, 160, ['0', '20','40','60','80','100', '120', '140', '160'], [{
+        from  : 145,
+        to    : 150,
+        color : 'PaleGreen'
+    }, {
+        from  : 150,
+        to    : 160,
+        color : 'LightSalmon'
+    }]);
     preHeaterPowerGauge = createPowerGauge("preHeaterPowerGauge");
 
-    mainHeaterTempGauge = createTempGauge("mainHeaterTempGauge", 0, 220, ['0', '20','40','60','80','100', '120', '140', '160', '170', '180', '190', '210', '220']);
+    mainHeaterTempGauge = createTempGauge("mainHeaterTempGauge", 0, 220, ['0', '20','40','60','80','100', '120', '140', '160', '180', '200', '220'], [{
+        from  : 205,
+        to    : 210,
+        color : 'PaleGreen'
+    }, {
+        from  : 210,
+        to    : 220,
+        color : 'LightSalmon'
+    }]);
     mainHeaterPowerGauge = createPowerGauge("mainHeaterPowerGauge");
 });
