@@ -4,11 +4,7 @@
 	"description" : "An implementation of a type of Programmable Logic Controller (PLC) using Node.js as a runtime.",
 	"main" : "./node330.js",
     "bin": "./node330.js",
-	"scripts" : {
-		"start" : "node node330.js"
-	},
-	"repository" : "",
-	"author" : "",
+	"author" : "Jim Heising",
 	"license" : "MIT",
 	"directories" : {
 		"lib" : "lib"
