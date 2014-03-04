@@ -18,6 +18,6 @@
     "winston": "*",
     "js2xmlparser": "0.1.0",
     "CBuffer": "0.1.4",
-    "node-dweetio": "0.0.8"
+    "node-dweetio": "*"
   }
 }
