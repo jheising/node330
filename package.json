@@ -1,6 +1,6 @@
 {
   "name": "node330",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An implementation of a type of Programmable Logic Controller (PLC) using Node.js as a runtime.",
   "main": "./node330.js",
   "bin": "./node330.js",
