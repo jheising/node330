@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/bootstrap-switch.css" rel="stylesheet">
+    <title>node330</title>
+    <script type="text/javascript" src="js/head.js"></script>
+    <script type="text/javascript">
+
+        // Load our scripts
+        head.js("js/underscore-min.js", "js/jquery-1.9.1.js", "js/jquery-ui-1.10.3.custom.min.js", "js/bootstrap.min.js", "js/knockout.js", "js/gauge.js", "js/node330.client.js", "js/highcharts/highcharts.js", "js/bootstrap-switch.js", function()
+        {
+        });
+
+
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div id="graph-container"></div>
+        </div>
+    </div>
+    <div class="row-fluid graph-actions">
+        <div class="span12">
+            <button id="reset_button" type="button" class="btn btn-info">Reset Data</button>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="control-values" data-bind="foreach: components">
+                <li>
+                    <label class="value-label" data-bind="click:toggleGraph"><i class="icon-signal graph-button"></i><span data-bind="text: display_name, attr:{for:name}"></span></label>
+                    <!-- ko if: type() == "SWITCH" -->
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" data-bind="checked: value, event: {click:endEditing}, attr:{id:name, disabled:read_only() ? 'true' : undefined}">
+                        <label class="onoffswitch-label" data-bind="attr:{for:name}">
+                            <div class="onoffswitch-inner">
+                                <div class="onoffswitch-active">
+                                    <div class="onoffswitch-switch">ON</div>
+                                </div>
+                                <div class="onoffswitch-inactive">
+                                    <div class="onoffswitch-switch">OFF</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: type() != "SWITCH" -->
+                    <div class="value-block">
+                        <input class="text-right input-large" type="text" data-bind="event: {focus:startEditing, blur:endEditing}, value: value, attr:{id:name, disabled:read_only() ? 'true' : undefined}">
+                        <!-- ko if: units() != "" -->
+                        <span class="value-units" data-bind="text: units"></span>
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko -->
+                    <span class="help-block" data-bind="text: description"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="connectionModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="myModalLabel">Connection Error</h3>
+    </div>
+    <div class="modal-body">
+        <p>The connection to the control box has been broken. Check your network connection and/or reset your control box.</p>
+    </div>
+</div>
+</body>
+</html>
