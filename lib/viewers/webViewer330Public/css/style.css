@@ -315,6 +315,12 @@ input[type="text"][disabled]
 	height: 600px;
 }
 
+#save-edit-button
+{
+    width: 43px;
+    height: 43px;
+}
+
 @media all and (max-width: 640px)
 {
 	ul.control-values li
