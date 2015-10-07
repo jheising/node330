@@ -312,7 +312,7 @@ input[type="text"][disabled]
 
 #graph-container
 {
-	height: 600px;
+	display: none;
 }
 
 #save-edit-button
