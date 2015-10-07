@@ -258,20 +258,20 @@ ul.control-values li
 input[type="text"]
 {
 	font-family : 'ds-digitalitalic', sans-serif;
-	background-color : #000000;
+	background-color : #4473ff;
 	margin: 0;
 	border: none;
 	font-size : 35px;
 	height : 35px;
-	color : #4473ff;
-    -webkit-text-fill-color: #4473ff;
+	color : #ffffff;
+    -webkit-text-fill-color: #ffffff;
 	box-shadow : none;
 }
 
 input[type="text"][disabled]
 {
-    color : #4473ff;
-    -webkit-text-fill-color: rgba(68, 115, 255, 1);
+    color : #ffffff;
+    -webkit-text-fill-color: #ffffff;
     -webkit-opacity: 1;
     opacity: 1;
 }
