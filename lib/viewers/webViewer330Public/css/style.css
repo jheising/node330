@@ -321,6 +321,11 @@ input[type="text"][disabled]
     height: 43px;
 }
 
+ul.control-values
+{
+	display: none;
+}
+
 @media all and (max-width: 640px)
 {
 	ul.control-values li
