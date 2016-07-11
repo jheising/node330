@@ -42,7 +42,10 @@
                         }],
                         data: data,
                         pagination : true,
-                        search : true
+                        search : true,
+                        rowStyle : function(row, index) {
+                            return "success";
+                        }
                     });
                 });
             });
