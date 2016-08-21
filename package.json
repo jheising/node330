@@ -10,14 +10,15 @@
     "lib": "lib"
   },
   "dependencies": {
+    "CBuffer": "0.1.4",
+    "async": "*",
+    "body-parser": "^1.15.2",
+    "express": "4.13.1",
+    "js2xmlparser": "0.1.0",
+    "node-dweetio": "*",
+    "optimist": "*",
     "underscore": "*",
     "underscore.string": "*",
-    "optimist": "*",
-    "async": "*",
-    "express": "4.13.1",
-    "winston": "1.0.1",
-    "js2xmlparser": "0.1.0",
-    "CBuffer": "0.1.4",
-    "node-dweetio": "*"
+    "winston": "1.0.1"
   }
 }
