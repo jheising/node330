@@ -257,11 +257,11 @@ ul.control-values li
 
 input[type="text"]
 {
-	font-family : 'ds-digitalitalic', sans-serif;
+	font-family : sans-serif;
 	background-color : #4473ff;
 	margin: 0;
 	border: none;
-	font-size : 35px;
+	font-size :25px;
 	height : 35px;
 	color : #ffffff;
     -webkit-text-fill-color: #ffffff;
@@ -278,7 +278,6 @@ input[type="text"][disabled]
 
 .value-label
 {
-	text-transform: uppercase;
 	color: #5c5c5c;
 }
 
@@ -298,6 +297,11 @@ input[type="text"][disabled]
 	font-size        : 23px;
 	background-color : #161616;
 	color: #8d8d8d;
+}
+
+.component-info-button
+{
+	cursor: pointer;
 }
 
 .graph-button
