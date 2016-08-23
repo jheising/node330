@@ -35,7 +35,7 @@
         <div class="span12">
             <ul class="control-values" data-bind="foreach: components">
                 <li>
-                        <label class="value-label" data-bind="click:toggleGraph"><i class="icon-signal graph-button"></i><span data-bind="text: display_name, attr:{for:name}"></span></label>
+                        <label class="value-label" data-bind="event:{click:toggleGraph}"><i class="icon-signal graph-button"></i> <span data-bind="text: display_name, attr:{for:name}"></span></label>
                             <!-- ko if: type() == "SWITCH" -->
                             <div class="onoffswitch">
                                 <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" data-bind="checked: value, event: {click:endEditing}, attr:{id:name, disabled:read_only() ? 'true' : undefined}">
@@ -59,7 +59,9 @@
                                 <!-- /ko -->
                             </div>
                             <!-- /ko -->
+
                             <span class="help-block" data-bind="text: description"></span>
+                    <div><i data-bind="componentInfo:true" class="icon-info-sign graph-button"></i></div>
                 </li>
             </ul>
         </div>
